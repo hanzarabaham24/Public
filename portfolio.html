@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Portfolio</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0;">
+
+  <header style="background-color: #343a40; color: white; padding: 20px; text-align: center;">
+    <h1 style="margin: 0;">My Portfolio</h1>
+    <nav style="margin-top: 10px;">
+      <ul style="list-style: none; padding: 0; display: flex; justify-content: center; gap: 20px;">
+        <li><a href="#prelim" style="color: #f8c200; text-decoration: none; font-weight: bold;">Prelim Task</a></li>
+        <li><a href="#midterm" style="color: #f8c200; text-decoration: none; font-weight: bold;">Midterm Task</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="prelim" style="background: white; padding: 20px; margin: 20px; border-radius: 8px;">
+    <h2 style="color: #0069d9;">Preliminary Task: Gnome Sort Implementation</h2>
+    <p>This task involves sorting a mobile dataset using the Gnome Sort algorithm based on the Rating column.</p>
+
+    <h3>Description</h3>
+    <ul>
+      <li>Loaded CSV file: <code>Updated_Mobile_Dataset.csv</code></li>
+      <li>Extracted and sorted the <strong>'Rating'</strong> column</li>
+      <li>User can choose to sort in ascending or descending order</li>
+      <li>Execution time is measured and logged</li>
+      <li>Sorted data is saved to <code>SortedDataset.csv</code></li>
+    </ul>
+
+    <h3>Output Screenshot</h3>
+    <img src="prelimoutput.jpg" alt="Prelim Task Output" style="max-width: 100%; border-radius: 5px; margin-top: 10px;">
+
+    <h3>Python Script</h3>
+    <pre style="background-color: #f1f1f1; padding: 10px; border-radius: 5px; overflow-x: auto;"><code>
+import csv
+import time
+
+def gnome_sort(arr, ascending=True):
+    """Optimized Gnome Sort for sorting ratings efficiently."""
+    index, n = 1, len(arr)
+    while index < n:
+        if (arr[index]['Rating'] >= arr[index - 1]['Rating']) if ascending else (arr[index]['Rating'] <= arr[index - 1]['Rating']):
+            index += 1
+        else:
+            arr[index], arr[index - 1] = arr[index - 1], arr[index]
+            index = max(1, index - 1)
+    return arr
+
+def load_csv(file_path):
+    try:
+        with open(file_path, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            return [{'Rating': float(row['Rating']), **row} for row in reader if row.get('Rating', '').strip()]
+    except (FileNotFoundError, ValueError):
+        print("Error: Dataset file not found or contains invalid data.")
+        return None
+
+def main():
+    file_path = "Updated_Mobile_Dataset.csv"
+    data = load_csv(file_path)
+    if not data:
+        return
+
+    ascending = input("Sort by Rating (A)scending or (B)Descending: ").strip().upper() == 'A'
+    
+    start_time = time.time()
+    sorted_data = gnome_sort(data, ascending)
+    print(f"\nExecution Time: {time.time() - start_time:.6f} seconds")
+
+    with open("SortedDataset.csv", mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=sorted_data[0].keys())
+        writer.writeheader()
+        writer.writerows(sorted_data)
+
+    print("✅ Dataset sorted and saved as 'SortedDataset.csv'")
+
+if __name__ == "__main__":
+    main()
+    </code></pre>
+  </section>
+
+  <section id="midterm" style="background: white; padding: 20px; margin: 20px; border-radius: 8px;">
+    <h2 style="color: #0069d9;">Midterm Task: Approximation Algorithms Chatbot (AlgoBot)</h2>
+    <p>This task involved building a chatbot named AlgoBot, which specializes in approximation algorithms for Data Analytics and Applications (DAA). The chatbot uses Flask for the backend and Ollama for generating responses.</p>
+
+    <h3>Key Features</h3>
+    <ul>
+      <li>Strict topic enforcement to ensure discussions remain focused on approximation algorithms.</li>
+      <li>Support for advanced topics such as PTAS/FPTAS, Vertex Cover, and Inapproximability.</li>
+      <li>Interactive user interface for engaging conversations.</li>
+      <li>Logging and error handling for robust operation.</li>
+    </ul>
+
+    <h3>Screenshots of AlgoBot in Action</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+      <img src="midtermsoutput1.png" alt="AlgoBot Explanation of 2-Approximation Algorithm" style="width: calc(50% - 10px); border-radius: 5px;">
+      <img src="midtermsoutput2.png" alt="AlgoBot Handling Off-Topic Question" style="width: calc(50% - 10px); border-radius: 5px;">
+    </div>
+
+    <h3>Python Script</h3>
+    <pre style="background-color: #f1f1f1; padding: 10px; border-radius: 5px; overflow-x: auto;"><code>
+from flask import Flask, request, jsonify, render_template
+import ollama
+import logging
+import sys
+import re
+from functools import lru_cache
+
+app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    stream=sys.stdout
+)
+
+# System prompt focused on DAA topic (Approximation Algorithms)
+SYSTEM_PROMPT = """You are AlgoBot, an expert in approximation algorithms for Data Analytics and Applications (DAA). 
+Your role is to:
+1. Explain approximation algorithms with clear examples from DAA
+2. Compare different approximation techniques
+3. Analyze approximation ratios mathematically
+4. Discuss NP-hard problems and their approximations
+5. Guide users in algorithm design choices
+
+Key topics you must cover:
+- 2-approximation algorithms
+- PTAS and FPTAS schemes
+- Vertex Cover, Set Cover, and TSP approximations
+- Randomized approximation methods
+- Inapproximability results
+
+Always:
+- Use mathematical notation (O-notation, ratios)
+- Provide DAA-relevant examples
+- Structure answers clearly
+- Stay strictly on topic
+- Reject unrelated questions politely"""
+    </code></pre>
+  </section>
+
+</body>
+</html>
